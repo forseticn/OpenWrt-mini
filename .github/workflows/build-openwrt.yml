@@ -42,8 +42,11 @@ jobs:
 
     - name: Execute Custom Script
       run: |
-        chmod +x ${{ env.DIY_SH }}
-        ${{ env.DIY_SH }}
+        if [ -e "${{ github.workspace }}/diy.sh" ]; then
+          chmod +x "${{ github.workspace }}/diy.sh"
+          "${{ github.workspace }}/diy.sh"
+        fi
+
 
     - name: Compile OpenWrt
       run: |
