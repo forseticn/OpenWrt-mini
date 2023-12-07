@@ -6,7 +6,7 @@ on:
 env:
   REPO: coolsnowwolf/lede
   DIY_SH: ./diy.sh
-  CONFIG_FILE: ./.config
+  CONFIG_FILE: ./x86.config
 
 jobs:
   build:
@@ -31,7 +31,8 @@ jobs:
         free -h
 
     - name: Use Custom Configuration
-      run: cp ${{ github.workspace }}/${{ env.CONFIG_FILE }} ${{ env.CONFIG_FILE }}
+      run: |
+        [ -e ${{ github.workspace }}/${{ env.CONFIG_FILE }} ] && cp ${{ github.workspace }}/${{ env.CONFIG_FILE }} ./.config
 
     - name: Update and Install Feeds
       run: |
