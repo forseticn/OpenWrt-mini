@@ -28,14 +28,18 @@ jobs:
     - name: Use Custom Configuration
       run: cp ${{ github.workspace }}/.config ./.config
 
-    - name: Clean Failed Downloads
-      run: make download -j8 V=s || true
-      # 这个命令尝试下载所有预先定义的源，如果有下载失败，它会被删除并在下次构建时重新下载
-
-    - name: Compile OpenWrt
+    - name: Update and Install Feeds
       run: |
         ./scripts/feeds update -a
         ./scripts/feeds install -a
+
+    - name: Execute Custom Script (diy.sh)
+      run: |
+        chmod +x ./diy.sh
+        ./diy.sh
+
+    - name: Compile OpenWrt
+      run: |
         make -j8 download V=s
         make -j$(nproc) V=s
 
