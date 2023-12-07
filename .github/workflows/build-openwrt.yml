@@ -3,6 +3,11 @@ name: Build OpenWrt
 on:
   workflow_dispatch:
 
+env:
+  REPO: coolsnowwolf/lede
+  DIY_SH: ./diy.sh
+  CONFIG_FILE: ./.config
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,7 +16,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        repository: coolsnowwolf/lede
+        repository: ${{ env.REPO }}
         submodules: 'recursive'
 
     - name: Install Dependencies
@@ -26,18 +31,17 @@ jobs:
         free -h
 
     - name: Use Custom Configuration
-      run: cp ${{ github.workspace }}/.config ./.config
+      run: cp ${{ github.workspace }}/${{ env.CONFIG_FILE }} ${{ env.CONFIG_FILE }}
 
     - name: Update and Install Feeds
       run: |
-        echo 'src-git small https://github.com/kenzok8/small' >>feeds.conf.default
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
-    - name: Execute Custom Script (diy.sh)
+    - name: Execute Custom Script
       run: |
-        chmod +x ./diy.sh
-        ./diy.sh
+        chmod +x ${{ env.DIY_SH }}
+        ${{ env.DIY_SH }}
 
     - name: Compile OpenWrt
       run: |
