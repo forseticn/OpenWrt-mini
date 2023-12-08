@@ -67,16 +67,21 @@ jobs:
           make clean
           df -h
       
-      - name: Organize files
+      - name: Check and Organize files
         if: success() && !cancelled()
         run: |
-          cd openwrt/bin/targets/*/*
-          ls -al
-          rm -rf packages *.buildinfo *.manifest *.bin sha256sums
-          filename="openwrt-${{ env.CONFIG_NAME }}-${{ github.run_id }}.zip"
-          gzip *.img 2>/dev/null || true
-          zip -q -r ${filename} *
-          echo "firmware=$PWD/${filename}" >> $GITHUB_ENV
+          if [ -d openwrt/bin/targets/ ]; then
+            cd openwrt/bin/targets/*/*
+            ls -al
+            rm -rf packages *.buildinfo *.manifest *.bin sha256sums
+            filename="openwrt-${{ github.run_id }}.zip"
+            gzip *.img 2>/dev/null || true
+            zip -q -r ${filename} *
+            echo "firmware=$PWD/${filename}" >> $GITHUB_ENV
+          else
+            echo "Compiled firmware directory not found."
+            exit 1
+          fi
 
       - name: Check Space Usage
         if: (!cancelled())
