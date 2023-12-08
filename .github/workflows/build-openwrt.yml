@@ -42,10 +42,12 @@ jobs:
 
       - name: Execute Custom Script
         run: |
+          cd openwrt
           if [ -e "${{ github.workspace }}/diy.sh" ]; then 
-          chmod +x "${{ github.workspace }}/diy.sh"
-          "${{ github.workspace }}/diy.sh"
+            chmod +x "${{ github.workspace }}/diy.sh"
+            "${{ github.workspace }}/diy.sh"
           fi
+
 
       - name: Compile the firmware
         run: |
