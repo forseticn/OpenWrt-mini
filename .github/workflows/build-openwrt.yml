@@ -47,7 +47,7 @@ jobs:
             chmod +x "${{ github.workspace }}/diy.sh"
             "${{ github.workspace }}/diy.sh"
           fi
-
+    
       - name: Compile the firmware
         run: |
           cd openwrt
@@ -55,7 +55,11 @@ jobs:
           find dl -size -1024c -exec ls -l {} \;
           find dl -size -1024c -exec rm -f {} \;
           make -j$(nproc) V=s
-
+          
+      - name: Check Space Usage
+        if: (!cancelled())
+        run: df -hT
+        
       - name: Upload bin directory
         if: success() && !cancelled()
         uses: actions/upload-artifact@v2
@@ -71,11 +75,7 @@ jobs:
           zip -q -r ${filename} .
           echo "firmware_zip=$PWD/${filename}" >> $GITHUB_ENV
 
-      - name: Check Space Usage
-        if: (!cancelled())
-        run: df -hT
-      
-      - name: Upload firmware to release
+            - name: Upload firmware to release
         uses: softprops/action-gh-release@v1
         if: success() && !cancelled()
         env:
