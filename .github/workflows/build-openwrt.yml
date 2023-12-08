@@ -1,8 +1,9 @@
 name: Build OpenWrt
 
 on:
-  schedule:
-    - cron: "0 0 1/2 * *"
+  repository_dispatch:
+  # schedule:
+  #  - cron: "0 0 1/2 * *"
   workflow_dispatch:
 
 jobs:
