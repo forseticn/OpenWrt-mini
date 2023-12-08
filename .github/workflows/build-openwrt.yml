@@ -33,11 +33,13 @@ jobs:
       run: |
         if [ -e "${{ github.workspace }}/x86.config" ]; then 
           cp "${{ github.workspace }}/x86.config" ./.config
+        else
+          echo "x86.config not found, using default configuration"
         fi
-
 
     - name: Update and Install Feeds
       run: |
+        echo 'src-git small https://github.com/kenzok8/small' >>feeds.conf.default
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
