@@ -28,10 +28,6 @@ jobs:
       - name: Clone source code
         run: |
           git clone https://github.com/coolsnowwolf/lede -b master openwrt
-          cd openwrt
-          if [ -d "package/lean/r8125" ]; then
-            rm -rf package/lean/r8125
-          fi
 
       - name: Update and Install Feeds
         run: |
