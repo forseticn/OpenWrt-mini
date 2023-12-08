@@ -59,14 +59,7 @@ jobs:
           make download -j8 V=s
           find dl -size -1024c -exec ls -l {} \;
           find dl -size -1024c -exec rm -f {} \;
-          # make -j$(($(nproc)/2)) V=s || make -j1 V=s
-
-      - name: Clean up after build
-        run: |
-          cd openwrt
-          make clean
-          df -h
-      
+    
       - name: Check and Organize files
         if: success() && !cancelled()
         run: |
