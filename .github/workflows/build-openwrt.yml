@@ -54,6 +54,8 @@ jobs:
       run: |
         make -j8 download V=s
         make -j$(nproc) V=s
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
