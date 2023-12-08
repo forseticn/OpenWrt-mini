@@ -5,8 +5,8 @@ on:
 
 env:
   REPO: coolsnowwolf/lede
-  DIY_SH: ./diy.sh
-  CONFIG_FILE: ./x86.config
+  DIY_SH: diy.sh
+  CONFIG_FILE: x86.config
 
 jobs:
   build:
