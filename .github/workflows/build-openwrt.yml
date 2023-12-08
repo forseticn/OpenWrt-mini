@@ -1,6 +1,8 @@
 name: Build OpenWrt
 
 on:
+  schedule:
+    - cron: "0 0 1/2 * *"
   workflow_dispatch:
 
 jobs:
@@ -20,11 +22,15 @@ jobs:
       - name: Clone source code
         run: |
           git clone https://github.com/coolsnowwolf/lede -b master openwrt
+          cd openwrt
+          if [ -d "package/lean/r8125" ]; then
+            rm -rf package/lean/r8125
+          fi
 
       - name: Update and Install Feeds
         run: |
           cd openwrt
-          echo 'src-git small https://github.com/kenzok8/small' >>feeds.conf.default
+          sed -i '1 i src-git small https://github.com/kenzok8/small' feeds.conf.default
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
@@ -36,41 +42,36 @@ jobs:
 
       - name: Execute Custom Script
         run: |
+          cd openwrt
           if [ -e "${{ github.workspace }}/diy.sh" ]; then 
             chmod +x "${{ github.workspace }}/diy.sh"
             ./${{ github.workspace }}/diy.sh
           fi
 
-      - name: Compile OpenWrt
+      - name: Compile the firmware
         run: |
           cd openwrt
-          make -j$(nproc) V=s
+          make download -j8 V=s
           find dl -size -1024c -exec ls -l {} \;
           find dl -size -1024c -exec rm -f {} \;
+          make -j$(nproc) V=s || make -j1 V=s
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: openwrt-binaries
-          path: openwrt/bin/
+      - name: Organize files
+        if: success() && !cancelled()
+        run: |
+          cd openwrt/bin/targets/*/*
+          ls -al
+          rm -rf packages *.buildinfo *.manifest *.bin sha256sums
+          filename="openwrt-${{ env.CONFIG_NAME }}-${{ github.run_id }}.zip"
+          gzip *.img 2>/dev/null || true
+          zip -q -r ${filename} *
+          echo "firmware=$PWD/${filename}" >> $GITHUB_ENV
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Upload firmware to release
+        uses: softprops/action-gh-release@v1
+        if: success() && !cancelled()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./openwrt/bin/packages
-          asset_name: openwrt-packages.zip
-          asset_content_type: application/zip
+          tag_name: ${{ github.run_id }}
+          files: ${{ env.firmware }}
