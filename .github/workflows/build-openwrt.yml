@@ -43,10 +43,11 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: Update feeds and Install feeds
-      run: cd openwrt
-           echo 'src-git small https://github.com/kenzok8/small' >>feeds.conf.default
-           ./scripts/feeds update -a
-           ./scripts/feeds install -a
+      run: | 
+        cd openwrt
+        echo 'src-git small https://github.com/kenzok8/small' >>feeds.conf.default
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
 
     - name: Load custom configuration
       run: |
