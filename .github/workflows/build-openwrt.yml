@@ -3,85 +3,74 @@ name: Build OpenWrt
 on:
   workflow_dispatch:
 
-env:
-  REPO: coolsnowwolf/lede
-
-
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        repository: ${{ env.REPO }}
-        submodules: 'recursive'
+      - name: Checkout
+        uses: actions/checkout@main
 
-    - name: Install Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 python2.7 unzip zlib1g-dev libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib lib32gcc-s1
+      - name: Init Env
+        run: |
+          sudo timedatectl set-timezone "Asia/Shanghai"
+          sudo apt-get update
+          sudo apt-get install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 python2.7 unzip zlib1g-dev libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib lib32gcc-s1
 
-    - name: Check Disk Space
-      run: |
-        df -h
-        echo "Free Disk Space:"
-        free -h
+      - name: Clone source code
+        run: |
+          git clone https://github.com/coolsnowwolf/lede -b master openwrt
 
-    - name: Use Custom x86 Configuration
-      run: |
-        if [ -e "${{ github.workspace }}/x86.config" ]; then 
-          cp "${{ github.workspace }}/x86.config" ./.config
-        else
-          echo "x86.config not found, using default configuration"
-        fi
+      - name: Update and Install Feeds
+        run: |
+          cd openwrt
+          echo 'src-git small https://github.com/kenzok8/small' >>feeds.conf.default
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
 
-    - name: Update and Install Feeds
-      run: |
-        echo 'src-git small https://github.com/kenzok8/small' >>feeds.conf.default
-        sed -i '$a src-git kenzo https://github.com/kenzok8/openwrt-packages' feeds.conf.default
-        
-        ./scripts/feeds update -a
-        ./scripts/feeds install -a
+      - name: Use Custom Configuration
+        run: |
+          cd openwrt
+          cp ${{ github.workspace }}/x86.config ./.config
+          make defconfig
 
-    - name: Execute Custom Script
-      run: |
-        if [ -e "${{ github.workspace }}/diy.sh" ]; then 
-          chmod +x "${{ github.workspace }}/diy.sh"
-          ./${{ github.workspace }}/diy.sh
-        fi
+      - name: Execute Custom Script
+        run: |
+          if [ -e "${{ github.workspace }}/diy.sh" ]; then 
+            chmod +x "${{ github.workspace }}/diy.sh"
+            ./${{ github.workspace }}/diy.sh
+          fi
 
-    - name: Compile OpenWrt
-      run: |
-        make -j8 download V=s
-        make -j$(nproc) V=s
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
+      - name: Compile OpenWrt
+        run: |
+          cd openwrt
+          make -j$(nproc) V=s
+          find dl -size -1024c -exec ls -l {} \;
+          find dl -size -1024c -exec rm -f {} \;
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: openwrt-binaries
-        path: bin/
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: openwrt-binaries
+          path: openwrt/bin/
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
 
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./bin/packages
-        asset_name: openwrt-packages.zip
-        asset_content_type: application/zip
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./openwrt/bin/packages
+          asset_name: openwrt-packages.zip
+          asset_content_type: application/zip
