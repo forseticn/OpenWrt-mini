@@ -56,28 +56,20 @@ jobs:
           find dl -size -1024c -exec rm -f {} \;
           make -j$(nproc) V=s
 
-      - name: List build output
+      - name: Upload bin directory
+        if: success() && !cancelled()
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt-Bin
+          path: openwrt/bin
+
+      - name: Create firmware zip
         if: success() && !cancelled()
         run: |
           cd openwrt/bin
-          find . -type f \( -name '*.bin' -o -name '*.img' \) -exec ls -lh {} \;
-
-      - name: Check and Organize files
-        if: success() && !cancelled()
-        run: |
-          FILES=$(find openwrt/bin -type f \( -name '*.bin' -o -name '*.img' \))
-          if [ -n "$FILES" ]; then
-            cd openwrt/bin
-            mkdir -p firmware
-            mv $(find . -type f \( -name '*.bin' -o -name '*.img' \)) firmware/
-            cd firmware
-            filename="openwrt-${{ github.run_id }}.zip"
-            zip -q -r ${filename} *
-            echo "firmware=$PWD/${filename}" >> $GITHUB_ENV
-          else
-            echo "Compiled firmware not found."
-            exit 1
-          fi
+          filename="openwrt-${{ github.run_id }}.zip"
+          zip -q -r ${filename} .
+          echo "firmware_zip=$PWD/${filename}" >> $GITHUB_ENV
 
       - name: Check Space Usage
         if: (!cancelled())
@@ -90,4 +82,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.run_id }}
-          files: ${{ env.firmware }}
+          files: ${{ env.firmware_zip }}
