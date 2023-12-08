@@ -29,15 +29,24 @@ jobs:
         echo "Free Disk Space:"
         free -h
 
-    - name: Use Custom Configuration
+    - name: Use Custom x86 Configuration
       run: |
-        [ -e "${{ github.workspace }}/x86.config" ] && cp "${{ github.workspace }}/x86.config" ./.config
+        if [ -e "${{ github.workspace }}/x86.config" ]; then 
+          cp "${{ github.workspace }}/x86.config" ./.config
+        fi
 
 
     - name: Update and Install Feeds
       run: |
         ./scripts/feeds update -a
         ./scripts/feeds install -a
+
+    - name: Execute Custom Script
+      run: |
+        if [ -e "${{ github.workspace }}/diy.sh" ]; then 
+          chmod +x "${{ github.workspace }}/diy.sh"
+          ./${{ github.workspace }}/diy.sh
+        fi
 
     - name: Compile OpenWrt
       run: |
