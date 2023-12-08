@@ -17,5 +17,7 @@ sed -i 's/"admin"/"admin", "services"/g; s/admin\//admin\/services\//g' feeds/lu
 sed -i 's/admin\//admin\/services\//g' feeds/luci/applications/luci-app-dockerman/luasrc/view/dockerman/*.htm
 sed -i 's|admin\\|admin\\/services\\|g' feeds/luci/applications/luci-app-dockerman/luasrc/view/dockerman/container.htm
 
+git clone --depth=1 https://github.com/jerrykuku/lua-maxminddb package/lua-maxminddb
+
 ./scripts/feeds update -a
 ./scripts/feeds install -a
