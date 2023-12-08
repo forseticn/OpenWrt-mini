@@ -5,7 +5,6 @@ env:
   REPO_BRANCH: master
 
 on:
-  repository_dispatch:
   workflow_dispatch:
   # schedule:
   #   - cron: 0 */18 * * *
