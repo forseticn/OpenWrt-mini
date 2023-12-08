@@ -2,8 +2,6 @@ name: Build OpenWrt
 
 on:
   repository_dispatch:
-  # schedule:
-  #  - cron: "0 0 1/2 * *"
   workflow_dispatch:
 
 jobs:
@@ -56,20 +54,28 @@ jobs:
           make download -j8 V=s
           find dl -size -1024c -exec ls -l {} \;
           find dl -size -1024c -exec rm -f {} \;
-    
+          make -j$(nproc) V=s
+
+      - name: List build output
+        if: success() && !cancelled()
+        run: |
+          cd openwrt/bin
+          find . -type f \( -name '*.bin' -o -name '*.img' \) -exec ls -lh {} \;
+
       - name: Check and Organize files
         if: success() && !cancelled()
         run: |
-          if [ -d openwrt/bin/targets/ ]; then
-            cd openwrt/bin/targets/*/*
-            ls -al
-            rm -rf packages *.buildinfo *.manifest *.bin sha256sums
+          FILES=$(find openwrt/bin -type f \( -name '*.bin' -o -name '*.img' \))
+          if [ -n "$FILES" ]; then
+            cd openwrt/bin
+            mkdir -p firmware
+            mv $(find . -type f \( -name '*.bin' -o -name '*.img' \)) firmware/
+            cd firmware
             filename="openwrt-${{ github.run_id }}.zip"
-            gzip *.img 2>/dev/null || true
             zip -q -r ${filename} *
             echo "firmware=$PWD/${filename}" >> $GITHUB_ENV
           else
-            echo "Compiled firmware directory not found."
+            echo "Compiled firmware not found."
             exit 1
           fi
 
