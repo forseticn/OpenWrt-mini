@@ -23,7 +23,7 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: x86.config
+  CONFIG_FILE: .config
   DIY_SH: diy.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
@@ -61,9 +61,7 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: Update and Install feeds 
-      run: cd openwrt
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
+      run: cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
 
     - name: Load custom configuration
       run: |
