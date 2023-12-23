@@ -1,4 +1,4 @@
-# | dockerman | mosdns | netspeedtest | passall | ssrp | #
+# | mosdns | netspeedtest | passall | ssrp | #
 
 # 设置默认IP地址
 sed -i 's/192.168.1.1/10.0.0.3/g' package/base-files/files/bin/config_generate
