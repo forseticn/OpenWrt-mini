@@ -1,4 +1,4 @@
-# | mosdns | netspeedtest | passall | ssrp | #
+# | mosdns | passall | ssrp | #
 
 # 设置默认IP地址
 sed -i 's/192.168.1.1/10.0.0.3/g' package/base-files/files/bin/config_generate
@@ -17,7 +17,7 @@ rm -rf feeds/luci/themes/luci-theme-argon
 git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon package/luci-theme-argon
 
 # netspeedtest
-git clone https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
+# git clone https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
 
 # 科学上网插件
 git clone --depth=1 -b main https://github.com/fw876/helloworld package/luci-app-ssr-plus
