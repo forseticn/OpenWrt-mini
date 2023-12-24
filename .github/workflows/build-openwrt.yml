@@ -127,7 +127,9 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
+        # echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
+        RELEASE_TAG=$(date +"%Y.%m.%d-%H%M")
+        echo $RELEASE_TAG > release_tag.txt
         touch release.txt
         # echo "::set-output name=status::success"
         echo "status=success" >> $GITHUB_OUTPUT
