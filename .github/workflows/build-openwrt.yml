@@ -129,7 +129,7 @@ jobs:
       run: |
         # echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
         RELEASE_TAG=$(date +"%Y.%m.%d-%H%M")
-        cho "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_OUTPUT
+        echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_OUTPUT
         touch release.txt
         # echo "::set-output name=status::success"
         echo "status=success" >> $GITHUB_OUTPUT
