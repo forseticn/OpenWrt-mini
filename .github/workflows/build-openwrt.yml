@@ -1,23 +1,8 @@
-#
-# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
-#
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
-#
-# https://github.com/P3TERX/Actions-OpenWrt
-# Description: Build OpenWrt using GitHub Actions
-#
-
 name: Build OpenWrt
 
 on:
   repository_dispatch:
   workflow_dispatch:
-  # inputs:
-  #    ssh:
-  #      description: 'SSH connection to Actions'
-  #      required: false
-  #      default: 'false'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -89,7 +74,6 @@ jobs:
         cd openwrt
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
-        # echo "::set-output name=status::success"
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
@@ -113,7 +97,6 @@ jobs:
         cd openwrt/bin/targets/*/*
         rm -rf packages *.buildinfo *.manifest *kernel.bin *rootfs.img.gz profiles.json sha256sums
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        # echo "::set-output name=status::success"
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware directory
@@ -127,11 +110,9 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        # echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
         RELEASE_TAG=$(date +"%Y.%m.%d-%H%M")
         echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_OUTPUT
         touch release.txt
-        # echo "::set-output name=status::success"
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
