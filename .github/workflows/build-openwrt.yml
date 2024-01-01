@@ -114,6 +114,7 @@ jobs:
         echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_OUTPUT
         touch release.txt
         echo "status=success" >> $GITHUB_OUTPUT
+        echo "测试文字" >> release.txt
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@v1
