@@ -26,10 +26,5 @@ sed -i 's|admin\\|admin\\/services\\|g' feeds/luci/applications/luci-app-dockerm
 # git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 # git clone --depth=1 https://github.com/jerrykuku/lua-maxminddb package/lua-maxminddb
 
-# alist
-rm -rf feeds/packages/lang/golang
-git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
-git clone https://github.com/sbwml/luci-app-alist package/alist
-
 ./scripts/feeds update -a
 ./scripts/feeds install -a
