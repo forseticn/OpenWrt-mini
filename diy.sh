@@ -26,5 +26,8 @@ sed -i 's|admin\\|admin\\/services\\|g' feeds/luci/applications/luci-app-dockerm
 # git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 # git clone --depth=1 https://github.com/jerrykuku/lua-maxminddb package/lua-maxminddb
 
+# 替换终端为bash
+sed -i 's/\/bin\/ash/\/bin\/bash/' package/base-files/files/etc/passwd
+
 ./scripts/feeds update -a
 ./scripts/feeds install -a
