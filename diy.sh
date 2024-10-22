@@ -10,8 +10,8 @@ sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.//g' package/lean/default-settings/f
 sed -i 's/"带宽监控"/"宽带"/g' `grep "带宽监控" -rl ./`
 
 # 更换主题
-rm -rf feeds/luci/themes/luci-theme-argon
-git clone --depth=1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon package/luci-theme-argon
+rm -rf luci-app-argon-config # if have
+git clone -b 18.06 https://github.com/jerrykuku/luci-app-argon-config.git luci-app-argon-config
 
 # 调整 Docker 到 服务 菜单
 sed -i 's/"admin"/"admin", "services"/g' feeds/luci/applications/luci-app-dockerman/luasrc/controller/*.lua
