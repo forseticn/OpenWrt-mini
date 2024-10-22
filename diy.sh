@@ -1,7 +1,11 @@
 # | mosdns | passall | dockerman | ddns-go | ttyd | diskman | upnp | VHDX & VMDK | #
 
 # 默认地址
-sed -i 's/192.168.1.1/10.0.0.3/g' package/base-files/files/bin/config_generate
+# sed -i 's/192.168.1.1/10.0.0.3/g' package/base-files/files/bin/config_generate
+
+sed -i 's/192.168.1.1/10.0.0.3/g' package/base-files/luci2/bin/config_generate
+
+
 
 # 清除密码
 sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.//g' package/lean/default-settings/files/zzz-default-settings
