@@ -34,5 +34,13 @@ sed -i 's|/bin/login|/bin/login -f root|g' openwrt/feeds/packages/utils/ttyd/fil
 # sed -i 's/nas/services/g; s/NAS/Services/g' openwrt/package/luci-app-alist/luasrc/controller/alist.lua
 # sed -i 's/nas/services/g' openwrt/package/luci-app-alist/luasrc/view/alist/alist_status.htm
 
+# 调整 x86 型号只显示 CPU 型号
+sed -i 's/${g}.*/${a}${b}${c}${d}${e}${f}${hydrid}/g' package/lean/autocore/files/x86/aut
+
+# 修改 argon 为默认主题
+# sed -i '/set luci.main.mediaurlbase=\/luci-static\/bootstrap/d' feeds/luci/themes/luci-theme-bootstrap/root/etc/uci-defaults/30_luci-theme-bootstrap
+# sed -i 's/Bootstrap theme/Argon theme/g' feeds/luci/collections/*/Makefile
+# sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/*/Mak
+
 ./scripts/feeds update -a
 ./scripts/feeds install -a
