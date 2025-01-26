@@ -7,7 +7,7 @@ sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.//g' package/lean/default-settings/f
 
 # 更换主题
 rm -rf feeds/luci/themes/luci-theme-argon
-git clone -b master https://github.com/jerrykuku/luci-theme-argon.git feeds/luci/theme
+git clone -b master https://github.com/jerrykuku/luci-theme-argon.git feeds/luci/themes/luci-theme-argon
 
 # 调整 Docker 到 服务 菜单
 # sed -i 's/"admin"/"admin", "services"/g' feeds/luci/applications/luci-app-dockerman/luasrc/controller/*.lua
